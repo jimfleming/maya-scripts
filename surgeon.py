@@ -1,4 +1,5 @@
 import maya.cmds
+from undoable import undoable
 
 def prep(transform):
   # Select the transform
@@ -46,9 +47,6 @@ def cut_one_with_one(cutter, target):
   newTargetA = cmds.polyBoolOp(cutterA, targetA, op=3, constructionHistory=False)[0]
   newTargetB = cmds.polyBoolOp(cutterB, targetB, op=3, constructionHistory=False)[0]
 
-  cleanup(newTargetA)
-  cleanup(newTargetA)
-
   return [newTargetA, newTargetB]
 
 def cut_many_with_one(cutter, targets):
@@ -63,6 +61,7 @@ def cut_one_with_many(cutters, target):
     targets = cut_many_with_one(cutter, targets)
   return targets
 
+@undoable
 def cut_with_selection():
   sel = cmds.ls(selection=True)
   if len(sel) != 2:
@@ -72,6 +71,8 @@ def cut_with_selection():
   cutters = sel[:-1]
 
   results = cut_one_with_many(cutters, target)
+  for result in results:
+    cleanup(result)
   cmds.group(results, world=True, name="patient")
 
 cut_with_selection()
