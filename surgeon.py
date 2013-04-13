@@ -12,6 +12,14 @@ def prep(transform):
   # Freeze transformations
   cmds.makeIdentity(apply=True, translate=True, rotate=True, scale=True, normal=1)
 
+def cleanup(transform):
+  # Select the transform
+  cmds.select(transform, replace=True)
+  # Scale 1/10x
+  cmds.scale(absolute=True, centerPivot=True, scaleXYZ=1/10)
+  # Freeze transformations
+  cmds.makeIdentity(apply=True, translate=True, rotate=True, scale=True, normal=1)
+
 def cut_one_with_one(cutter, target):
   print 'Cutting 1:1 %s with %s' % (target, cutter)
 
@@ -19,7 +27,6 @@ def cut_one_with_one(cutter, target):
   targetA = cmds.duplicate(target, returnRootsOnly=True)[0]
   targetB = cmds.duplicate(target, returnRootsOnly=True)[0]
 
-  # Delete history
   prep(targetA)
   prep(targetB)
 
@@ -29,7 +36,6 @@ def cut_one_with_one(cutter, target):
   cutterA = cmds.duplicate(cutter, returnRootsOnly=True)[0]
   cutterB = cmds.duplicate(cutter, returnRootsOnly=True)[0]
 
-  # Delete history
   prep(cutterA)
   prep(cutterB)
 
@@ -39,6 +45,10 @@ def cut_one_with_one(cutter, target):
   # Perform intersections
   newTargetA = cmds.polyBoolOp(cutterA, targetA, op=3, constructionHistory=False)[0]
   newTargetB = cmds.polyBoolOp(cutterB, targetB, op=3, constructionHistory=False)[0]
+
+  cleanup(newTargetA)
+  cleanup(newTargetA)
+
   return [newTargetA, newTargetB]
 
 def cut_many_with_one(cutter, targets):
@@ -50,9 +60,8 @@ def cut_many_with_one(cutter, targets):
 def cut_one_with_many(cutters, target):
   targets = [target]
   for i, cutter in enumerate(cutters):
-    print 'Cutting X:1 %s with %s' % (targets, cutter)
     targets = cut_many_with_one(cutter, targets)
-    print 'Receive %s' % targets
+  return targets
 
 def cut_with_selection():
   sel = cmds.ls(selection=True)
@@ -62,8 +71,7 @@ def cut_with_selection():
   target = sel[-1]
   cutters = sel[:-1]
 
-  print 'Cutting 1:X %s with %s' % (target, cutters)
-
-  cut_one_with_many(cutters, target)
+  results = cut_one_with_many(cutters, target)
+  cmds.group(results, world=True, name="patient")
 
 cut_with_selection()
