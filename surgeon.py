@@ -9,7 +9,7 @@ def prep(transform):
   # Delete history
   cmds.delete(constructionHistory=True)
   # Scale 10x
-  cmds.scale(absolute=True, centerPivot=True, scaleXYZ=10)
+  cmds.scale(centerPivot=True, scaleXYZ=10)
   # Freeze transformations
   cmds.makeIdentity(apply=True, translate=True, rotate=True, scale=True, normal=1)
 
@@ -17,7 +17,7 @@ def cleanup(transform):
   # Select the transform
   cmds.select(transform, replace=True)
   # Scale 1/10x
-  cmds.scale(absolute=True, centerPivot=True, scaleXYZ=1/10)
+  cmds.scale(centerPivot=True, scaleXYZ=1/10)
   # Freeze transformations
   cmds.makeIdentity(apply=True, translate=True, rotate=True, scale=True, normal=1)
 
