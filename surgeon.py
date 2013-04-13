@@ -1,5 +1,5 @@
-import maya.cmds
 from undoable import undoable
+import maya.cmds
 
 def prep(transform):
   # Select the transform

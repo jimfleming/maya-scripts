@@ -1,3 +1,5 @@
+import maya.cmds
+
 def undoable(function):
   '''A decorator that will make commands undoable in maya'''
 
